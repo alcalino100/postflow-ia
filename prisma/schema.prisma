@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id        Int      @id @default(autoincrement())
+  name      String
+  metaPageId String?
+  igUserId   String?
+  createdAt DateTime @default(now())
+  mediaAssets MediaAsset[]
+  scheduledPosts ScheduledPost[]
+  aiGenerations AiGeneration[]
+  publicationLogs PublicationLog[]
+  engagementMetrics EngagementMetric[]
+}
+
+model MediaAsset {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  account   Account  @relation(fields: [accountId], references: [id])
+  url       String
+  type      String
+  createdAt DateTime @default(now())
+  scheduledPosts ScheduledPost[]
+}
+
+model ScheduledPost {
+  id          String   @id @default(cuid())
+  accountId   Int
+  account     Account  @relation(fields: [accountId], references: [id])
+  mediaAssetId Int?
+  mediaAsset  MediaAsset? @relation(fields: [mediaAssetId], references: [id])
+  network     String
+  type        String
+  caption     String
+  scheduledAt DateTime
+  status      String   @default("scheduled")
+  metaPostId  String?
+  error       String?
+  createdAt   DateTime @default(now())
+  logs        PublicationLog[]
+}
+
+model PublicationLog {
+  id            Int      @id @default(autoincrement())
+  postId        String
+  post          ScheduledPost @relation(fields: [postId], references: [id])
+  accountId     Int
+  account       Account  @relation(fields: [accountId], references: [id])
+  attempt       Int
+  status        String
+  message       String?
+  metaPostId    String?
+  createdAt     DateTime @default(now())
+}
+
+model AiGeneration {
+  id        Int      @id @default(autoincrement())
+  accountId Int
+  account   Account  @relation(fields: [accountId], references: [id])
+  prompt    String
+  model     String
+  tokens    Int?
+  response  String
+  createdAt DateTime @default(now())
+}
+
+model EngagementMetric {
+  id          Int      @id @default(autoincrement())
+  postId      String
+  accountId   Int
+  account     Account  @relation(fields: [accountId], references: [id])
+  date        DateTime
+  reach       Int      @default(0)
+  impressions Int      @default(0)
+  likes       Int      @default(0)
+  comments    Int      @default(0)
+  shares      Int      @default(0)
+  saves       Int      @default(0)
+  engagement  Float    @default(0)
+  createdAt   DateTime @default(now())
+}
