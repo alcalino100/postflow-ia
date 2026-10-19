@@ -36,7 +36,9 @@ export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] 
     if (res.ok) { setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, scheduledAt: new Date(v).toISOString() } : x))); toast.success("Atualizado") }
     else toast.error(res.error || "Falha")
   }
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (post: ScheduledPost) => {
+    const id = post?.id
+    if (!id) { toast.error("ID inválido"); return }
     const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
     if (res.ok) { setPosts((prev) => prev.filter((p) => p.id !== id)); toast.success("Excluído") }
     else toast.error(res.error || "Falha ao excluir")
@@ -147,7 +149,7 @@ export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] 
                     <Button variant="ghost" size="icon" aria-label="Pausar" onClick={() => handleTogglePause(p)}>
                       <Pause className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p.id)}>
+                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>

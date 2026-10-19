@@ -40,7 +40,9 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
     return true
   })
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (post: any) => {
+    const id = post?.id
+    if (!id) { toast.error("ID inválido"); return }
     const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
     if (res.ok) {
       setPosts((prev) => prev.filter((p) => p.id !== id))
@@ -132,7 +134,7 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
                     <Button variant="ghost" size="icon" aria-label="Ver log" onClick={() => setLogPost(p)}>
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p.id)}>
+                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>
