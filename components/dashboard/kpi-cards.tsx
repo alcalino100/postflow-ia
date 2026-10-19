@@ -1,15 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { kpis } from "@/lib/mock-data"
 import { Calendar, Film, Clock, TrendingUp } from "lucide-react"
 
-const items = [
-  { label: "Posts agendados", value: kpis.scheduled, icon: Calendar, color: "text-indigo-400" },
-  { label: "Reels agendados", value: kpis.reels, icon: Film, color: "text-amber-400" },
-  { label: "Publicações nas próximas 24h", value: kpis.next24h, icon: Clock, color: "text-emerald-400" },
-  { label: "Taxa média de engajamento", value: `${kpis.avgEngagement}%`, icon: TrendingUp, color: "text-indigo-400" },
-]
+export interface KpiData {
+  scheduled: number
+  reels: number
+  next24h: number
+  avgEngagement: number
+}
 
-export function KpiCards() {
+export function KpiCards({ data }: { data: KpiData }) {
+  const items = [
+    { label: "Posts agendados", value: data.scheduled, icon: Calendar, color: "text-indigo-400" },
+    { label: "Reels agendados", value: data.reels, icon: Film, color: "text-amber-400" },
+    { label: "Publicações nas próximas 24h", value: data.next24h, icon: Clock, color: "text-emerald-400" },
+    { label: "Taxa média de engajamento", value: `${data.avgEngagement}%`, icon: TrendingUp, color: "text-indigo-400" },
+  ]
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {items.map((it) => (

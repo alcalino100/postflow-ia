@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, format, isSameMonth, isSameDay, addMonths, subMonths } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { calendarEvents } from "@/lib/mock-data"
+
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -24,7 +24,7 @@ function colorFor(network: string, status: string) {
   return network === "instagram" ? "bg-pink-500/80" : "bg-indigo-500/80"
 }
 
-export function CalendarView() {
+export function CalendarView({ events }: { events: any[] }) {
   const [current, setCurrent] = useState(new Date(2026, 9, 1))
   const [filters, setFilters] = useState({ networks: new Set(networks), types: new Set(types), statuses: new Set(statuses) })
   const [selectedDay, setSelectedDay] = useState<Date | null>(null)
@@ -36,7 +36,7 @@ export function CalendarView() {
   }, [current])
 
   const eventsForDay = (d: Date) =>
-    calendarEvents.filter((e) => {
+    events.filter((e) => {
       if (!isSameDay(new Date(e.date + "T00:00:00"), d)) return false
       if (!filters.networks.has(e.network as any)) return false
       if (!filters.types.has(e.type as any)) return false
