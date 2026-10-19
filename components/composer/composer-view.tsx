@@ -83,6 +83,9 @@ export function ComposerView() {
         setEditedCaption(res.variations[0].caption)
       }
       toast.success("Legendas geradas")
+    } catch (e: any) {
+      console.error(e)
+      toast.error(e?.message || "Erro inesperado")
     } finally {
       setGenerating(false)
     }
