@@ -258,7 +258,7 @@ export function ComposerView() {
               >
                 <div className="flex items-center justify-between">
                   <Badge variant="secondary">{v.label}</Badge>
-                  <span className="text-xs text-muted-foreground">{v.hashtags.join(" ")}</span>
+                  <span className="text-xs text-muted-foreground">{(v.hashtags || []).join(" ")}</span>
                 </div>
                 <p className="mt-2 text-sm">{v.caption}</p>
                 <p className="mt-1 text-xs text-amber-400">CTA: {v.cta}</p>

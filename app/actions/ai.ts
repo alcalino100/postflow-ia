@@ -65,7 +65,7 @@ Gere ${briefing.variations} variações: curta, média e storytelling. Cada uma 
       id: `v${i + 1}`,
       label: v.label || `Variação ${i + 1}`,
       caption: v.caption || "",
-      hashtags: v.hashtags || [],
+      hashtags: Array.isArray(v.hashtags) ? v.hashtags : (typeof v.hashtags === "string" ? v.hashtags.split(/[,\s]+/).filter(Boolean) : []),
       cta: v.cta || briefing.cta,
     }))
     return { ok: true, variations, tokens: msg.usage?.input_tokens ?? 0 + (msg.usage?.output_tokens ?? 0) }
