@@ -36,10 +36,11 @@ export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] 
     if (res.ok) { setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, scheduledAt: new Date(v).toISOString() } : x))); toast.success("Atualizado") }
     else toast.error(res.error || "Falha")
   }
-  const handleDelete = async (post: any) => {
-    console.log("DELETE post:", JSON.stringify(post))
-    const id = post?.id ?? post?.ID ?? Object.values(post || {})[0]
-    if (!id) { toast.error("POST=" + JSON.stringify(post)); return }
+  const handleDelete = async (e: any) => {
+    const btn = e?.currentTarget as HTMLElement
+    const id = btn?.dataset?.id
+    console.log("DELETE id from dataset:", id)
+    if (!id) { toast.error("NO-ID; post=" + JSON.stringify(e)); return }
     const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
     if (res.ok) { setPosts((prev) => prev.filter((p) => p.id !== id)); toast.success("Excluído") }
     else toast.error(res.error || "Falha ao excluir")
@@ -150,7 +151,7 @@ export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] 
                     <Button variant="ghost" size="icon" aria-label="Pausar" onClick={() => handleTogglePause(p)}>
                       <Pause className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p)}>
+                    <Button variant="ghost" size="icon" aria-label="Excluir" data-id={p.id} onClick={handleDelete}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>

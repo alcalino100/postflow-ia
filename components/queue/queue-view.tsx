@@ -40,9 +40,10 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
     return true
   })
 
-  const handleDelete = async (post: any) => {
-    const id = post?.id
-    if (!id) { toast.error("POST=" + JSON.stringify(post)); return }
+  const handleDelete = async (e: any) => {
+    const btn = e?.currentTarget as HTMLElement
+    const id = btn?.dataset?.id
+    if (!id) { toast.error("NO-ID"); return }
     const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
     if (res.ok) {
       setPosts((prev) => prev.filter((p) => p.id !== id))
@@ -134,7 +135,7 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
                     <Button variant="ghost" size="icon" aria-label="Ver log" onClick={() => setLogPost(p)}>
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p)}>
+                    <Button variant="ghost" size="icon" aria-label="Excluir" data-id={p.id} onClick={handleDelete}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>
