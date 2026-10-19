@@ -26,7 +26,7 @@ function statusBadge(status: ScheduledPost["status"]) {
 }
 
 export function QueueView({ posts: initialPosts }: { posts: any[] }) {
-  const [posts] = useState(initialPosts)
+  const [posts, setPosts] = useState(initialPosts)
   const [statusFilter, setStatusFilter] = useState("all")
   const [networkFilter, setNetworkFilter] = useState("all")
   const [typeFilter, setTypeFilter] = useState("all")
@@ -40,6 +40,25 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
     return true
   })
 
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
+    if (res.ok) {
+      setPosts((prev) => prev.filter((p) => p.id !== id))
+      toast.success("Excluído")
+    } else {
+      toast.error(res.error || "Falha ao excluir")
+    }
+  }
+  const handleTogglePause = async (p: any) => {
+    const newStatus = p.status === "paused" ? "scheduled" : "paused"
+    const res = await fetch(`/api/schedule/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: newStatus }) }).then((r) => r.json())
+    if (res.ok) {
+      setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus } : x)))
+      toast.success(newStatus === "paused" ? "Pausado" : "Retomado")
+    } else {
+      toast.error(res.error || "Falha")
+    }
+  }
   return (
     <div className="space-y-4">
       <Card className="border-border bg-card">
@@ -104,7 +123,7 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
                   <TableCell className="tabular-nums text-xs">{new Date(p.scheduledAt).toLocaleString("pt-BR")}</TableCell>
                   <TableCell>{statusBadge(p.status)}</TableCell>
                   <TableCell className="text-right space-x-1">
-                    <Button variant="ghost" size="icon" aria-label="Pausar/Retomar" onClick={() => toast.info("Pausar/retomar (mock)")}>
+                    <Button variant="ghost" size="icon" aria-label="Pausar/Retomar" onClick={() => handleTogglePause(p)}>
                       {p.status === "paused" ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
                     </Button>
                     <Button variant="ghost" size="icon" aria-label="Duplicar" onClick={() => toast.info("Duplicado (mock)")}>
@@ -113,7 +132,7 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
                     <Button variant="ghost" size="icon" aria-label="Ver log" onClick={() => setLogPost(p)}>
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => toast.info("Excluído (mock)")}>
+                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>

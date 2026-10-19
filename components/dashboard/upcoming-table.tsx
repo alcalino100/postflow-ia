@@ -26,8 +26,27 @@ function statusBadge(status: ScheduledPost["status"]) {
   return <Badge variant="outline" className={m.cls}>{m.label}</Badge>
 }
 
-export function UpcomingTable({ posts }: { posts: ScheduledPost[] }) {
+export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] }) {
+  const [posts, setPosts] = useState(initialPosts)
   const [open, setOpen] = useState(false)
+  const handleEdit = async (p: ScheduledPost) => {
+    const v = window.prompt("Nova data/hora (YYYY-MM-DDTHH:mm)", p.scheduledAt.slice(0, 16))
+    if (!v) return
+    const res = await fetch(`/api/schedule/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scheduled_at: new Date(v).toISOString() }) }).then((r) => r.json())
+    if (res.ok) { setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, scheduledAt: new Date(v).toISOString() } : x))); toast.success("Atualizado") }
+    else toast.error(res.error || "Falha")
+  }
+  const handleDelete = async (id: string) => {
+    const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
+    if (res.ok) { setPosts((prev) => prev.filter((p) => p.id !== id)); toast.success("Excluído") }
+    else toast.error(res.error || "Falha ao excluir")
+  }
+  const handleTogglePause = async (p: ScheduledPost) => {
+    const newStatus = p.status === "paused" ? "scheduled" : "paused"
+    const res = await fetch(`/api/schedule/${p.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: newStatus }) }).then((r) => r.json())
+    if (res.ok) { setPosts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: newStatus as any } : x))); toast.success(newStatus === "paused" ? "Pausado" : "Retomado") }
+    else toast.error(res.error || "Falha")
+  }
   return (
     <Card className="border-border bg-card">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -122,13 +141,13 @@ export function UpcomingTable({ posts }: { posts: ScheduledPost[] }) {
                   </TableCell>
                   <TableCell>{statusBadge(p.status)}</TableCell>
                   <TableCell className="text-right space-x-1">
-                    <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => toast.info("Editar (mock)")}>
+                    <Button variant="ghost" size="icon" aria-label="Editar" onClick={() => handleEdit(p)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Pausar" onClick={() => toast.info("Pausar (mock)")}>
+                    <Button variant="ghost" size="icon" aria-label="Pausar" onClick={() => handleTogglePause(p)}>
                       <Pause className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => toast.info("Excluir (mock)")}>
+                    <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => handleDelete(p.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>
