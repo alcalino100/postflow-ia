@@ -39,7 +39,7 @@ export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] 
   const handleDelete = async (post: any) => {
     console.log("DELETE post:", JSON.stringify(post))
     const id = post?.id ?? post?.ID ?? Object.values(post || {})[0]
-    if (!id) { toast.error("ID inválido"); return }
+    if (!id) { toast.error("ID inválido: " + Object.keys(post || {}).join(",")); return }
     const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
     if (res.ok) { setPosts((prev) => prev.filter((p) => p.id !== id)); toast.success("Excluído") }
     else toast.error(res.error || "Falha ao excluir")
