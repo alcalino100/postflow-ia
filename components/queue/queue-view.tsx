@@ -42,7 +42,7 @@ export function QueueView({ posts: initialPosts }: { posts: any[] }) {
 
   const handleDelete = async (post: any) => {
     const id = post?.id
-    if (!id) { toast.error("ID inválido"); return }
+    if (!id) { toast.error("POST=" + JSON.stringify(post)); return }
     const res = await fetch(`/api/schedule/${id}`, { method: "DELETE" }).then((r) => r.json())
     if (res.ok) {
       setPosts((prev) => prev.filter((p) => p.id !== id))
