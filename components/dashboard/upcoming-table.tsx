@@ -136,7 +136,7 @@ export function UpcomingTable({ posts: initialPosts }: { posts: ScheduledPost[] 
                   </TableCell>
                   <TableCell className="capitalize">{p.type}</TableCell>
                   <TableCell className="capitalize">{p.network}</TableCell>
-                  <TableCell className="max-w-[220px] truncate">{p.caption} <span className="text-[10px] text-muted-foreground">[{p.id}]</span></TableCell>
+                  <TableCell className="max-w-[220px] truncate">{p.caption}</TableCell>
                   <TableCell className="tabular-nums text-xs">
                     {new Date(p.scheduledAt).toLocaleString("pt-BR")}
                   </TableCell>
