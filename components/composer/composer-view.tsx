@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { generateCaptions, type AiVariation } from "@/app/actions/ai"
-import { createScheduledPosts } from "@/app/actions/schedule"
+import type { AiVariation } from "@/app/actions/ai"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -72,7 +71,7 @@ export function ComposerView() {
     }
     setGenerating(true)
     try {
-      const res = await generateCaptions({ ...briefing, variations: Number(briefing.variations) })
+      const res = await fetch("/api/ai/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...briefing, variations: Number(briefing.variations) }) }).then((r) => r.json())
       if (!res.ok) {
         toast.error(res.error || "Falha na Claude API")
         return
@@ -118,7 +117,7 @@ export function ComposerView() {
     fd.append("intervalUnit", schedule.intervalUnit)
     fd.append("count", String(schedule.count))
     if (file) fd.append("file", file)
-    const res = await createScheduledPosts(fd)
+    const res = await fetch("/api/schedule", { method: "POST", body: fd }).then((r) => r.json())
     if (res.ok) toast.success(`${res.count} publicações adicionadas à fila`)
     else toast.error(res.error || "Falha ao agendar")
   }
