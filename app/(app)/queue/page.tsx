@@ -20,7 +20,6 @@ export default async function QueuePage() {
   } catch {
     posts = mockPosts
   }
-  if (posts.length === 0) posts = mockPosts
   return (
     <div className="space-y-6">
       <div>

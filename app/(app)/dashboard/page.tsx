@@ -21,7 +21,6 @@ export default async function DashboardPage() {
   } catch {
     posts = mockPosts
   }
-  if (posts.length === 0) posts = mockPosts
   return (
     <div className="space-y-6">
       <div>
