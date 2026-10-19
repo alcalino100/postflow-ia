@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { mockPosts, queueLogs } from "@/lib/mock-data"
+import { queueLogs } from "@/lib/mock-data"
 import { ScheduledPost } from "@/lib/mock-data"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,14 +25,15 @@ function statusBadge(status: ScheduledPost["status"]) {
   return <Badge variant="outline" className={m.cls}>{m.label}</Badge>
 }
 
-export function QueueView() {
+export function QueueView({ posts: initialPosts }: { posts: any[] }) {
+  const [posts] = useState(initialPosts)
   const [statusFilter, setStatusFilter] = useState("all")
   const [networkFilter, setNetworkFilter] = useState("all")
   const [typeFilter, setTypeFilter] = useState("all")
   const [period, setPeriod] = useState("")
   const [logPost, setLogPost] = useState<ScheduledPost | null>(null)
 
-  const filtered = mockPosts.filter((p) => {
+  const filtered = posts.filter((p) => {
     if (statusFilter !== "all" && p.status !== statusFilter) return false
     if (networkFilter !== "all" && p.network !== networkFilter) return false
     if (typeFilter !== "all" && p.type !== typeFilter) return false

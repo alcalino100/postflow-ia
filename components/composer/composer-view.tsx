@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { generateCaptions, type AiVariation } from "@/app/actions/ai"
+import { createScheduledPosts } from "@/app/actions/schedule"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -99,13 +100,24 @@ export function ComposerView() {
   }
   const queue = calcQueue()
 
-  const handleAddQueue = () => {
+  const handleAddQueue = async () => {
     if (!validateFile()) return
     if (variations.length === 0) {
       toast.error("Gere legendas antes de adicionar")
       return
     }
-    toast.success(`${schedule.count} publicações adicionadas à fila (mock)`)
+    const fd = new FormData()
+    fd.append("network", network)
+    fd.append("contentType", contentType)
+    fd.append("caption", editedCaption || variations[0]?.caption || "")
+    fd.append("start", schedule.start ? new Date(schedule.start).toISOString() : new Date().toISOString())
+    fd.append("intervalValue", String(schedule.intervalValue))
+    fd.append("intervalUnit", schedule.intervalUnit)
+    fd.append("count", String(schedule.count))
+    if (file) fd.append("file", file)
+    const res = await createScheduledPosts(fd)
+    if (res.ok) toast.success(`${res.count} publicações adicionadas à fila`)
+    else toast.error(res.error || "Falha ao agendar")
   }
 
   return (
