@@ -182,8 +182,15 @@ async function publishOne(post: any): Promise<string> {
     body: JSON.stringify(mediaBody),
   }).then((r) => r.json())
   if (container.error) throw new Error(container.error.message)
-  // wait a bit for video processing
-  if (isVideo) await new Promise((r) => setTimeout(r, 5000))
+  // poll container status until FINISHED (or timeout)
+  const maxWait = isVideo ? 60000 : 30000
+  const start = Date.now()
+  while (Date.now() - start < maxWait) {
+    const status = await fetch(`https://graph.facebook.com/v19.0/${container.id}?fields=status_code&access_token=${token}`).then((r) => r.json())
+    if (!status.status_code || status.status_code === "FINISHED") break
+    if (status.status_code === "ERROR") throw new Error(status.status || "Falha no processamento da mídia")
+    await new Promise((r) => setTimeout(r, 2000))
+  }
   const pub = await fetch(`https://graph.facebook.com/v19.0/${igUserId}/media_publish`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
