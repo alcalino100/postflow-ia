@@ -31,6 +31,8 @@ export function ComposerView() {
     variations: 3,
   })
   const [generating, setGenerating] = useState(false)
+  const [scheduling, setScheduling] = useState(false)
+  const [scheduled, setScheduled] = useState(false)
   const [variations, setVariations] = useState<AiVariation[]>([])
   const [selected, setSelected] = useState<string | null>(null)
   const [editedCaption, setEditedCaption] = useState("")
@@ -103,23 +105,38 @@ export function ComposerView() {
   const queue = calcQueue()
 
   const handleAddQueue = async () => {
+    if (scheduled) {
+      toast.info("Esta mídia já foi agendada")
+      return
+    }
     if (!validateFile()) return
     if (variations.length === 0) {
       toast.error("Gere legendas antes de adicionar")
       return
     }
-    const fd = new FormData()
-    fd.append("network", network)
-    fd.append("contentType", contentType)
-    fd.append("caption", editedCaption || variations[0]?.caption || "")
-    fd.append("start", schedule.start ? new Date(schedule.start).toISOString() : new Date().toISOString())
-    fd.append("intervalValue", String(schedule.intervalValue))
-    fd.append("intervalUnit", schedule.intervalUnit)
-    fd.append("count", String(schedule.count))
-    if (file) fd.append("file", file)
-    const res = await fetch("/api/schedule", { method: "POST", body: fd }).then((r) => r.json())
-    if (res.ok) toast.success(`${res.count} publicações adicionadas à fila`)
-    else toast.error(res.error || "Falha ao agendar")
+    setScheduling(true)
+    try {
+      const fd = new FormData()
+      fd.append("network", network)
+      fd.append("contentType", contentType)
+      fd.append("caption", editedCaption || variations[0]?.caption || "")
+      fd.append("start", schedule.start ? new Date(schedule.start).toISOString() : new Date().toISOString())
+      fd.append("intervalValue", String(schedule.intervalValue))
+      fd.append("intervalUnit", schedule.intervalUnit)
+      fd.append("count", String(schedule.count))
+      if (file) fd.append("file", file)
+      const res = await fetch("/api/schedule", { method: "POST", body: fd }).then((r) => r.json())
+      if (res.ok) {
+        setScheduled(true)
+        toast.success(`${res.count} publicações adicionadas à fila`)
+      } else {
+        toast.error(res.error || "Falha ao agendar")
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Erro inesperado")
+    } finally {
+      setScheduling(false)
+    }
   }
 
   return (
@@ -318,8 +335,8 @@ export function ComposerView() {
                 </ul>
               </div>
             )}
-            <Button onClick={handleAddQueue} className="w-full" aria-label="Adicionar à fila">
-              Adicionar à fila
+            <Button onClick={handleAddQueue} disabled={scheduling || scheduled || variations.length === 0} className="w-full" aria-label="Adicionar à fila">
+              {scheduling ? "Agendando..." : scheduled ? "Agendado ✓" : "Adicionar à fila"}
             </Button>
           </CardContent>
         </Card>
