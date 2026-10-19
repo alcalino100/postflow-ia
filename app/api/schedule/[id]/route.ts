@@ -5,6 +5,9 @@ export const dynamic = "force-dynamic"
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   try {
+    if (!params.id || params.id === "undefined" || params.id === "null") {
+      return NextResponse.json({ ok: false, error: "ID inválido" }, { status: 400 })
+    }
     const supabase = getSupabaseAdmin()
     const { error } = await supabase.from("scheduled_posts").delete().eq("id", params.id)
     if (error) throw new Error(error.message)
@@ -16,6 +19,9 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
+    if (!params.id || params.id === "undefined" || params.id === "null") {
+      return NextResponse.json({ ok: false, error: "ID inválido" }, { status: 400 })
+    }
     const body = await req.json()
     const supabase = getSupabaseAdmin()
     const { error } = await supabase.from("scheduled_posts").update(body).eq("id", params.id)
