@@ -35,7 +35,7 @@ export async function generateCaptions(briefing: Briefing): Promise<{ ok: boolea
 
   try {
     const client = new Anthropic({ apiKey })
-    const model = "claude-3-5-sonnet-20241022"
+    const model = "claude-sonnet-4-6"
     const msg = await client.messages.create({
       model,
       max_tokens: 1200,

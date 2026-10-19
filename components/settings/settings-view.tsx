@@ -22,7 +22,7 @@ export function SettingsView() {
   const [statusMsg, setStatusMsg] = useState("")
   const [testing, setTesting] = useState(false)
 
-  const [model, setModel] = useState("claude-3-5-sonnet-20241022")
+  const [model, setModel] = useState("claude-sonnet-4-6")
   const [systemPrompt, setSystemPrompt] = useState("Você é um social media brasileiro...")
   const [tone, setTone] = useState("Profissional")
   const [lang, setLang] = useState("pt-BR")
@@ -150,9 +150,9 @@ export function SettingsView() {
             <Select value={model} onValueChange={(v) => setModel(v ?? model)}>
               <SelectTrigger aria-label="Modelo Claude"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="claude-3-5-sonnet-20241022">claude-3-5-sonnet</SelectItem>
-                <SelectItem value="claude-3-haiku-20240307">claude-3-haiku</SelectItem>
-                <SelectItem value="claude-opus-4-20250514">claude-opus-4</SelectItem>
+                <SelectItem value="claude-sonnet-4-6">claude-sonnet-4-6</SelectItem>
+                <SelectItem value="claude-haiku-4-5-20251001">claude-haiku-4-5</SelectItem>
+                <SelectItem value="claude-opus-4-6">claude-opus-4-6</SelectItem>
               </SelectContent>
             </Select>
           </div>
