@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import { listScheduledPosts } from "@/app/actions/schedule"
 import { mockPosts } from "@/lib/mock-data"
 import { KpiCards } from "@/components/dashboard/kpi-cards"
